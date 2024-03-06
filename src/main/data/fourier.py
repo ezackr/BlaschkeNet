@@ -36,3 +36,13 @@ def get_fourier_coefficients(
         c_i = np.sum(f * np.exp(-1j * 2 * np.pi * i * time_values / len(f))) / len(f)
         coefficients.append(c_i)
     return coefficients
+
+
+def get_absolute_logarithm(f: np.ndarray):
+    """
+    Computes the absolute logarithm of a given function. Uses the modulus
+    function if necessary for complex values.
+    :param f: a function
+    :return: the log of the absolute value of f
+    """
+    return np.log(np.absolute(f))
