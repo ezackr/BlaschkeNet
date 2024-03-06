@@ -8,7 +8,8 @@ def remove_negative_frequencies(f: np.ndarray):
     Removes negative frequencies from an input signal f. To remove negative
     frequencies, a fourier transform is applied to f, which is then multiplied
     by the ReLU function max(0, x). Then, an inverse fourier transform is
-    applied to recover the original signal.
+    applied to recover the original signal. The final signal is multiplied by
+    two to preserve the relation: Re(f+ | R) = f.
     :param f: a waveform
     :return: the waveform without negative frequencies
     """
@@ -46,3 +47,11 @@ def get_absolute_logarithm(f: np.ndarray):
     :return: the log of the absolute value of f
     """
     return np.log(np.absolute(f))
+
+
+def get_positive_complex_projection(f: np.ndarray):
+    f_pos = remove_negative_frequencies(f)
+    coefficients = get_fourier_coefficients(f)
+
+    pass
+
