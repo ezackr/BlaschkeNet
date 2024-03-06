@@ -56,3 +56,12 @@ def get_blaschke_decomposition(f: np.ndarray):
     G_pos = np.exp(L_pos)
     B_pos = F_pos / G_pos
     return F_pos, G_pos, B_pos
+
+
+def get_phase(f: np.ndarray):
+    """
+    Returns the phase of a complex-valued function f.
+    :param f: a function
+    :return: the phase of the function
+    """
+    return -1j * np.log(f / np.absolute(f))
