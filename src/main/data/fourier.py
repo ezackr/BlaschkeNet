@@ -1,5 +1,3 @@
-from typing import List
-
 import numpy as np
 
 
@@ -16,27 +14,13 @@ def remove_negative_frequencies(f: np.ndarray):
     return 2 * np.fft.ifft(np.maximum(np.fft.fft(f), 0))
 
 
-def get_fourier_coefficients(
-        f: np.ndarray,
-        degree: int = None,
-        sampling_rate: int = 44100
-) -> List[float]:
+def get_fourier_coefficients(f: np.ndarray):
     """
     Computes the fourier coefficients of a given waveform function f.
-    :param f: a waveform
-    :param degree: the number of terms in the fourier series
-    :param sampling_rate: the sampling rate of the waveform
-    :return: a list of fourier coefficients
+    :param f: a function
+    :return: the fourier coefficients of f
     """
-    # use maximum degree polynomial if none provided
-    if not degree:
-        degree = len(f)
-    time_values = np.arange(0, len(f)) / sampling_rate
-    coefficients = []
-    for i in range(degree + 1):
-        c_i = np.sum(f * np.exp(-1j * 2 * np.pi * i * time_values / len(f))) / len(f)
-        coefficients.append(c_i)
-    return coefficients
+    return np.fft.fft(f)
 
 
 def get_absolute_logarithm(f: np.ndarray):
@@ -49,9 +33,26 @@ def get_absolute_logarithm(f: np.ndarray):
     return np.log(np.absolute(f))
 
 
-def get_positive_complex_projection(f: np.ndarray):
+def get_positive_fourier_estimate(f: np.ndarray):
+    """
+    Given an arbitrary function f, recovers a positive fourier estimate F_pos.
+    :param f: a function
+    :return: the positive fourier estimate
+    """
     f_pos = remove_negative_frequencies(f)
-    coefficients = get_fourier_coefficients(f)
+    f_pos_coeff = get_fourier_coefficients(f_pos)
+    return np.fft.ifft(f_pos_coeff)
 
-    pass
 
+def get_blaschke_decomposition(f: np.ndarray):
+    """
+    Returns the Blaschke decomposition for a function f.
+    :param f: a function
+    :return: the blaschke decomposition (F_pos, B_pos, G_pos)
+    """
+    F_pos = get_positive_fourier_estimate(f)
+    l = get_absolute_logarithm(F_pos)
+    L_pos = get_positive_fourier_estimate(l)
+    G_pos = np.exp(L_pos)
+    B_pos = F_pos / G_pos
+    return F_pos, G_pos, B_pos
