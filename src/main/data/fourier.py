@@ -3,15 +3,17 @@ import numpy as np
 
 def remove_negative_frequencies(f: np.ndarray):
     """
-    Removes negative frequencies from an input signal f. To remove negative
-    frequencies, a fourier transform is applied to f, which is then multiplied
-    by the ReLU function max(0, x). Then, an inverse fourier transform is
-    applied to recover the original signal. The final signal is multiplied by
-    two to preserve the relation: Re(f+ | R) = f.
+    Removes negative frequencies from an input signal f. A fourier transform
+    is applied to f, where each negative frequency entry is set to 0. Then, an
+    inverse fourier transform is applied to recover the original signal. The
+    final signal is multiplied by two to preserve the original relation. That
+    is, the real component of the new waveform is equal to the original
+    waveform.
     :param f: a waveform
-    :return: the waveform without negative frequencies
+    :return: the original waveform without negative frequencies
     """
-    return 2 * np.fft.ifft(np.maximum(np.fft.fft(f), 0))
+    frequency_mask = (np.fft.fftfreq(len(f)) >= 0).astype(int)
+    return 2 * np.fft.ifft(np.fft.fft(f) * frequency_mask)
 
 
 def get_fourier_coefficients(f: np.ndarray):
