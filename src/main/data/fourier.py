@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def remove_negative_frequencies(f: np.ndarray):
+def remove_negative_frequencies(f: np.ndarray) -> np.ndarray:
     """
     Removes negative frequencies from an input signal f. A fourier transform
     is applied to f, where each negative frequency entry is set to 0. Then, an
@@ -12,8 +12,14 @@ def remove_negative_frequencies(f: np.ndarray):
     :param f: a waveform
     :return: the original waveform without negative frequencies
     """
-    frequency_mask = (np.fft.fftfreq(len(f)) >= 0).astype(int)
-    return 2 * np.fft.ifft(np.fft.fft(f) * frequency_mask)
+    f_mean = np.mean(f)
+    f_demean = f - f_mean
+    f_fft = np.fft.fft(f_demean)
+    f_fft_shift = np.fft.fftshift(f_fft)
+    f_fft_shift[len(f_fft_shift) // 2:] = 0
+    f_ifft_shift = np.fft.ifftshift(f_fft_shift)
+    f_ifft = 2 * np.fft.ifft(f_ifft_shift)
+    return f_ifft + f_mean
 
 
 def get_fourier_coefficients(f: np.ndarray):
@@ -60,7 +66,7 @@ def get_blaschke_decomposition(f: np.ndarray):
     return F_pos, G_pos, B_pos
 
 
-def get_phase(f: np.ndarray):
+def get_phase(f: np.ndarray) -> np.ndarray:
     """
     Returns the phase of a complex-valued function f.
     :param f: a function
