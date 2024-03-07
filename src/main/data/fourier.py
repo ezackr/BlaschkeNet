@@ -1,5 +1,7 @@
 import numpy as np
 
+from src.main.util.visual import plot_waveform, plot_complex_plane
+
 
 def remove_negative_frequencies(f: np.ndarray) -> np.ndarray:
     """
@@ -12,14 +14,12 @@ def remove_negative_frequencies(f: np.ndarray) -> np.ndarray:
     :param f: a waveform
     :return: the original waveform without negative frequencies
     """
-    f_mean = np.mean(f)
-    f_demean = f - f_mean
-    f_fft = np.fft.fft(f_demean)
-    f_fft_shift = np.fft.fftshift(f_fft)
-    f_fft_shift[len(f_fft_shift) // 2:] = 0
-    f_ifft_shift = np.fft.ifftshift(f_fft_shift)
-    f_ifft = 2 * np.fft.ifft(f_ifft_shift)
-    return f_ifft + f_mean
+    mean = np.mean(f)
+    f_demean = f - mean
+    frequency_mask = (np.fft.fftfreq(len(f)) >= 0).astype(int)
+    f_fft = np.fft.fft(f_demean) * frequency_mask
+    f_ifft = 2 * np.fft.ifft(f_fft)
+    return f_ifft + mean
 
 
 def get_fourier_coefficients(f: np.ndarray):
@@ -72,4 +72,33 @@ def get_phase(f: np.ndarray) -> np.ndarray:
     :param f: a function
     :return: the phase of the function
     """
-    return -1j * np.log(f / np.absolute(f))
+    return np.angle(f)
+
+
+def main():
+    x_values = np.linspace(0, 1000 * 2 * np.pi, 1000)
+    f = np.cos(x_values) + 1
+    sampling_rate = 1
+    # plot_waveform(f, sampling_rate=sampling_rate, title="Original function")
+    f_plus = remove_negative_frequencies(f)
+    plot_waveform(f_plus.real, sampling_rate=sampling_rate, title="F on the real axis")
+    plot_complex_plane(f_plus, title="F on the complex plane")
+    f_phase = get_phase(f_plus)
+    plot_waveform(f_phase, title="Phase of F")
+    # l = get_absolute_logarithm(f_plus)
+    # # plot_waveform(l.real, sampling_rate=sampling_rate)
+    # l_plus = remove_negative_frequencies(l)
+    # g_plus = np.exp(l_plus)
+    # plot_waveform(g_plus.real, sampling_rate=sampling_rate, title="G on the real axis")
+    # plot_complex_plane(g_plus, title="G on the complex plane")
+    # g_phase = get_phase(g_plus)
+    # plot_waveform(g_phase, sampling_rate=sampling_rate, title="Phase of G")
+    # b_plus = f_plus / g_plus
+    # plot_waveform(b_plus.real, sampling_rate=sampling_rate, title="B on the real axis")
+    # plot_complex_plane(b_plus, title="B on the complex plane")
+    # b_phase = get_phase(b_plus)
+    # plot_waveform(b_phase.real, sampling_rate=sampling_rate, title="Phase of B")
+
+
+if __name__ == "__main__":
+    main()
