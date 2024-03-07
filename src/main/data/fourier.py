@@ -1,6 +1,6 @@
-import numpy as np
+from typing import Tuple
 
-from src.main.util.visual import plot_waveform, plot_complex_plane
+import numpy as np
 
 
 def remove_negative_frequencies(f: np.ndarray) -> np.ndarray:
@@ -15,14 +15,12 @@ def remove_negative_frequencies(f: np.ndarray) -> np.ndarray:
     :return: the original waveform without negative frequencies
     """
     mean = np.mean(f)
-    f_demean = f - mean
     frequency_mask = (np.fft.fftfreq(len(f)) >= 0).astype(int)
-    f_fft = np.fft.fft(f_demean) * frequency_mask
-    f_ifft = 2 * np.fft.ifft(f_fft)
-    return f_ifft + mean
+    f_fft = np.fft.fft(f - mean) * frequency_mask
+    return 2 * np.fft.ifft(f_fft) + mean
 
 
-def get_absolute_logarithm(f: np.ndarray):
+def get_absolute_logarithm(f: np.ndarray) -> np.ndarray:
     """
     Computes the absolute logarithm of a given function. Uses the modulus
     function if necessary for complex values.
@@ -32,7 +30,7 @@ def get_absolute_logarithm(f: np.ndarray):
     return np.log(np.absolute(f))
 
 
-def get_blaschke_decomposition(f: np.ndarray):
+def get_blaschke_decomposition(f: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Returns the Blaschke decomposition for a function f.
     :param f: a function
@@ -52,4 +50,4 @@ def get_phase(f: np.ndarray) -> np.ndarray:
     :param f: a function
     :return: the phase of the function
     """
-    return np.angle(f)
+    return np.unwrap(np.angle(f))
