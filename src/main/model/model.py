@@ -9,7 +9,7 @@ class BlaschkeNet(nn.Module):
             self,
             num_bins: int,
             num_frames: int,
-            num_classes: int = 5,
+            num_classes: int = 3,
             kernel_size: int = 3,
             p: float = 0.25
     ):
