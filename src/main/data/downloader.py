@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 from urllib.request import urlopen, urlretrieve
 from pydub.silence import detect_leading_silence
-from pydub import AudioSegment
+from pydub import AudioSegment, effects
 import os
 from pathlib import Path
 from tqdm import tqdm as tqdm
@@ -49,7 +49,7 @@ def fetch_dataset(langs: list[str], target_dir: str, sample_duration=5, max_samp
                 # Non-satisfactory sample, throw it out
                 os.remove(sample_path)
             else:
-                audio = audio.set_frame_rate(44100)
+                audio = audio.set_frame_rate(11025)
                 audio = audio[:sample_duration*1000]
                 audio.export(sample_path, bitrate='128k')
                 sample_index += 1
@@ -65,8 +65,8 @@ def _remove_silence(audio: AudioSegment):
     :param audio:
     :return: cropped AudioSegment
     """
-
-    cropped = audio[detect_leading_silence(audio):]
+    audio = effects.normalize(audio)
+    cropped = audio[detect_leading_silence(audio, silence_threshold=-30):]
     cropped = cropped.reverse()[detect_leading_silence(cropped.reverse()):].reverse()
 
     return cropped
