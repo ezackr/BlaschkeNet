@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 from urllib.request import urlopen, urlretrieve
 from pydub.silence import detect_leading_silence
-from pydub import AudioSegment, silence
+from pydub import AudioSegment
 import os
 from pathlib import Path
 from tqdm import tqdm as tqdm
@@ -84,5 +84,4 @@ def _get_number_of_samples_in_lang(lang: str):
 
 # Run this file from cmdline in the directory you want to put dataset/ in :)
 if __name__ == '__main__':
-    fetch_dataset(LANG_LABELS, 'dataset/', max_samples=10)
-
+    fetch_dataset(LANG_LABELS, 'dataset/', max_samples=150)

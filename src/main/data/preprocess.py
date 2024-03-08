@@ -5,7 +5,7 @@ from typing import List
 import numpy as np
 import torch
 from pydub import AudioSegment
-from torch.utils.data import Dataset, TensorDataset
+from torch.utils.data import TensorDataset
 from tqdm import tqdm
 
 from src.main.data.constants import LANG_LABELS
@@ -44,7 +44,7 @@ def process_mp3s_to_ds(mp3_dir: str, labels: list[str], num_samples: int) -> Ten
     :param num_samples: number of samples per label
     :param mp3_dir: MUST include trailing /
     :param labels: langs
-    :returns TensorDataset
+    :returns: TensorDataset
     """
     vecs = []
     for label_index, label_name in enumerate(labels):
@@ -53,37 +53,12 @@ def process_mp3s_to_ds(mp3_dir: str, labels: list[str], num_samples: int) -> Ten
             audio = mp3_to_numpy(f'{mp3_dir}{label_name}/sample{i}.mp3')
             f, g, b = get_blaschke_decomposition(audio)
             phase = get_phase(b)
+            assert len(phase) == 220500
             vector = torch.cat((torch.tensor(label_index).view(1), torch.from_numpy(phase)))
             vecs.append(vector)
     return TensorDataset(torch.vstack(vecs))
 
 
 if __name__ == '__main__':
-    td = process_mp3s_to_ds('dataset/', LANG_LABELS, 10)
+    td = process_mp3s_to_ds('dataset/', LANG_LABELS, 150)
     torch.save(td, 'dataset.pt')
-
-# UNUSED
-
-# class BlaschkeDataset(Dataset):
-#     """Blaschke dataset of all downloaded mp3s."""
-#
-#     def __init__(self, mp3_dir: str, labels: list[str], num_samples: int):
-#         """
-#
-#         :param mp3_dir: directory of mp3s of dataset NEEDS trailing /
-#         :param labels: languages
-#         :param num_samples: number of samples per label (must be consistent)
-#         """
-#         self.mp3_dir = mp3_dir
-#         self.labels = labels
-#         self.num_samples = num_samples
-#
-#     def __len__(self):
-#         return len(self.labels) * self.num_samples
-#
-#     def __getitem__(self, idx):
-#         label = self.labels[idx // self.num_samples]
-#         sample_num = idx % self.num_samples
-#
-#         audio = AudioSegment.from_mp3(f'{self.mp3_dir}sample{sample_num}.mp3')
-#
