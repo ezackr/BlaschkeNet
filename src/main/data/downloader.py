@@ -81,5 +81,7 @@ def _get_number_of_samples_in_lang(lang: str):
     return len(soup.find_all('p'))-1
 
 
+# Run this file from cmdline in the directory you want to put dataset/ in :)
 if __name__ == '__main__':
-    fetch_dataset(LANG_LABELS, max_samples=150)
+    fetch_dataset(LANG_LABELS, 'dataset/', max_samples=150)
+
