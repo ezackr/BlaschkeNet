@@ -59,7 +59,7 @@ def process_mp3s_to_ds(mp3_dir: str, labels: list[str], num_samples: int) -> Ten
 
 
 if __name__ == '__main__':
-    td = process_mp3s_to_ds('dataset/', LANG_LABELS, 150)
+    td = process_mp3s_to_ds('dataset/', LANG_LABELS, 10)
     torch.save(td, 'dataset.pt')
 
 # UNUSED

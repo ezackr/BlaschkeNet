@@ -49,6 +49,7 @@ def fetch_dataset(langs: list[str], target_dir: str, sample_duration=5, max_samp
                 # Non-satisfactory sample, throw it out
                 os.remove(sample_path)
             else:
+                audio = audio.set_frame_rate(44100)
                 audio = audio[:sample_duration*1000]
                 audio.export(sample_path, bitrate='128k')
                 sample_index += 1
@@ -83,5 +84,5 @@ def _get_number_of_samples_in_lang(lang: str):
 
 # Run this file from cmdline in the directory you want to put dataset/ in :)
 if __name__ == '__main__':
-    fetch_dataset(LANG_LABELS, 'dataset/', max_samples=150)
+    fetch_dataset(LANG_LABELS, 'dataset/', max_samples=10)
 
