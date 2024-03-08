@@ -6,6 +6,8 @@ import os
 from pathlib import Path
 from tqdm import tqdm as tqdm
 
+from src.main.data.constants import LANG_LABELS
+
 LANG_URL = 'http://accent.gmu.edu/browse_language.php?function=find&language='
 SAMPLE_URL = 'http://accent.gmu.edu/soundtracks/'
 
@@ -78,3 +80,6 @@ def _get_number_of_samples_in_lang(lang: str):
     soup = BeautifulSoup(urlopen(LANG_URL + lang), 'html.parser')
     return len(soup.find_all('p'))-1
 
+
+if __name__ == '__main__':
+    fetch_dataset(LANG_LABELS, max_samples=150)
